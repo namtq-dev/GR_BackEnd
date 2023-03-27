@@ -5,6 +5,19 @@ const mongoose = require('mongoose');
 const { readdirSync } = require('fs');
 
 dotenv.config();
+
+// Database
+connectDB().catch((err) => console.log(err));
+mongoose.connection.on(
+  'error',
+  console.error.bind(console, 'Connection error:')
+);
+
+async function connectDB() {
+  await mongoose.connect(process.env.DATABASE_URL);
+  console.log('Connected to the MongoDB Server');
+}
+
 const app = express();
 
 var corsOptions = {
@@ -18,18 +31,6 @@ app.use(express.json());
 readdirSync('./routes').map((route) =>
   app.use('/', require('./routes/' + route))
 );
-
-// Database
-connectDB().catch((err) => console.log(err));
-mongoose.connection.on(
-  'error',
-  console.error.bind(console, 'Connection error:')
-);
-
-async function connectDB() {
-  await mongoose.connect(process.env.DATABASE_URL);
-  console.log('Connected to the MongoDB Server');
-}
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
