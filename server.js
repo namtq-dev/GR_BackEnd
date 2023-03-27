@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const { readdirSync } = require('fs');
 
 const app = express();
 
@@ -9,9 +10,9 @@ var corsOptions = {
 };
 app.use(cors(corsOptions));
 
-app.get('/', (req, res) => {
-  res.send('welcome from home');
-});
+readdirSync('./routes').map((route) =>
+  app.use('/', require('./routes/' + route))
+);
 
 app.listen(8000, () => {
   console.log('server is listening...');
