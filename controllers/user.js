@@ -70,7 +70,18 @@ exports.register = async (req, res) => {
     const emailVerificationUrl = `${process.env.FRONTEND_BASE_URL}/activate/${emailVerificationToken}`;
     sendVerificationEmail(user.email, user.firstName, emailVerificationUrl);
 
-    res.json(user);
+    const loginToken = generateToken({ id: user._id }, '7d');
+    res.send({
+      id: user._id,
+      username: user.username,
+      picture: user.picture,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      loginToken,
+      verified: user.verified,
+      message:
+        'Register successfully! Please check your email to activate your account!',
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
