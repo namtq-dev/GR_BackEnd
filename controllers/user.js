@@ -6,6 +6,7 @@ const {
 const { generateToken } = require('../helpers/tokens');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const { sendVerificationEmail } = require('../helpers/mailer');
 
 exports.register = async (req, res) => {
   try {
@@ -66,6 +67,9 @@ exports.register = async (req, res) => {
     }).save();
 
     const emailVerificationToken = generateToken({ id: user._id }, '30m');
+    const emailVerificationUrl = `${process.env.FRONTEND_BASE_URL}/activate/${emailVerificationToken}`;
+    sendVerificationEmail(user.email, user.firstName, emailVerificationUrl);
+
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
