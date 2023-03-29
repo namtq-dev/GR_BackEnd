@@ -107,3 +107,33 @@ exports.activateAccount = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid email or password.' });
+    }
+
+    const checkPassword = await bcrypt.compare(password, user.password);
+    if (!checkPassword) {
+      return res.status(401).json({ message: 'Invalid email or password.' });
+    }
+
+    // login success
+    const loginToken = generateToken({ id: user._id }, '7d');
+    res.send({
+      id: user._id,
+      username: user.username,
+      picture: user.picture,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      loginToken,
+      verified: user.verified,
+      message: 'Login successfully!',
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
