@@ -7,6 +7,7 @@ const { generateToken } = require('../helpers/tokens');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const { sendVerificationEmail } = require('../helpers/mailer');
+const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {
   try {
@@ -82,6 +83,26 @@ exports.register = async (req, res) => {
       message:
         'Register successfully! Please check your email to activate your account!',
     });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.activateAccount = async (req, res) => {
+  try {
+    const { token } = req.body;
+    const user = jwt.verify(token, process.env.TOKEN_SECRET);
+    const newUser = await User.findById(user.id);
+    if (newUser.verified) {
+      return res
+        .status(400)
+        .json({ message: 'This account has already been verified.' });
+    } else {
+      await User.findByIdAndUpdate(user.id, { verified: true });
+      return res
+        .status(200)
+        .json({ message: 'Your account has been activated successfully.' });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
