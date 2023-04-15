@@ -131,7 +131,6 @@ exports.login = async (req, res) => {
       lastName: user.lastName,
       loginToken,
       verified: user.verified,
-      message: 'Login successfully!',
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
