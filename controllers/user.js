@@ -90,8 +90,16 @@ exports.register = async (req, res) => {
 
 exports.activateAccount = async (req, res) => {
   try {
+    const validUser = req.user.id;
     const { token } = req.body;
     const user = jwt.verify(token, process.env.TOKEN_SECRET);
+
+    if (validUser !== user.id) {
+      return res
+        .status(401)
+        .json({ message: "You don't have permission to perform this action." });
+    }
+
     const newUser = await User.findById(user.id);
     if (newUser.verified) {
       return res
@@ -135,9 +143,4 @@ exports.login = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-};
-
-exports.auth = async (req, res) => {
-  console.log(req.user);
-  res.json('Welcome from auth');
 };
