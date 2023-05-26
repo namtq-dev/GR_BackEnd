@@ -144,3 +144,25 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.sendVerification = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const user = await User.findById(id);
+    if (user.verified === true) {
+      return res
+        .status(400)
+        .json({ message: 'This account has already been verified.' });
+    }
+
+    const emailVerificationToken = generateToken({ id: user._id }, '30m');
+    const emailVerificationUrl = `${process.env.FRONTEND_BASE_URL}/activate/${emailVerificationToken}`;
+    sendVerificationEmail(user.email, user.firstName, emailVerificationUrl);
+
+    return res
+      .status(200)
+      .json({ message: 'A new email verification link has been sent to you.' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
