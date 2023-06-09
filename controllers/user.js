@@ -211,3 +211,20 @@ exports.sendResetPasswordCode = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.validateResetCode = async (req, res) => {
+  try {
+    const { email, code } = req.body;
+    const user = await User.findOne({ email }).select('-password'); // don't take the password
+    const codeFoundInDb = await Code.findOne({ userId: user._id });
+    if (codeFoundInDb.code !== code) {
+      return res.status(400).json({
+        message: 'Invalid password reset code',
+      });
+    }
+
+    return res.status(200).json({ message: 'OK' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
