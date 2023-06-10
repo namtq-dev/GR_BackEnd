@@ -219,8 +219,29 @@ exports.validateResetCode = async (req, res) => {
     const codeFoundInDb = await Code.findOne({ userId: user._id });
     if (codeFoundInDb.code !== code) {
       return res.status(400).json({
-        message: 'Invalid password reset code',
+        message: 'Invalid password reset code.',
       });
+    }
+
+    return res.status(200).json({ message: 'OK' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const cryptedPassword = await bcrypt.hash(password, 12);
+    const result = await User.findOneAndUpdate(
+      { email },
+      { password: cryptedPassword }
+    );
+
+    if (!result) {
+      return res
+        .status(400)
+        .json({ message: 'Failed to reset your password.' });
     }
 
     return res.status(200).json({ message: 'OK' });
