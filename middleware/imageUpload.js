@@ -6,7 +6,7 @@ module.exports = async function (req, res, next) {
       return res.status(400).json({ message: 'No files selected.' });
     }
     let files = Object.values(req.files).flat();
-    files.forEach((file) => {
+    for (const file of files) {
       if (
         file.mimetype !== 'image/jpeg' &&
         file.mimetype !== 'image/png' &&
@@ -21,7 +21,8 @@ module.exports = async function (req, res, next) {
         removeTemp(file.tempFilePath);
         return res.status(400).json({ message: 'File size is too large.' });
       }
-    });
+    }
+    next();
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
