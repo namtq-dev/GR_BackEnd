@@ -35,7 +35,8 @@ const userSchema = new Schema(
     picture: {
       type: String,
       trim: true,
-      default: '',
+      default:
+        'https://res.cloudinary.com/djccswary/image/upload/v1688650774/default_pic_jeaybr_ddc73n.png',
     },
     cover: {
       type: String,
