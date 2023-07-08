@@ -12,7 +12,7 @@ const postSchema = new Schema(
     text: {
       type: String,
     },
-    image: {
+    images: {
       type: Array,
     },
     user: {
