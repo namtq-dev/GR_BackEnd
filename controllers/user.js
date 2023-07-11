@@ -7,6 +7,7 @@ const { generateToken } = require('../helpers/tokens');
 const generateCode = require('../helpers/generateCode');
 const User = require('../models/user');
 const Code = require('../models/code');
+const Post = require('../models/post');
 const bcrypt = require('bcrypt');
 const {
   sendVerificationEmail,
@@ -257,7 +258,8 @@ exports.getProfile = async (req, res) => {
     if (!profile) {
       return res.json({ message: 'User not found.' });
     }
-    res.json(profile);
+    const posts = await Post.find({ user: profile._id }).populate('user');
+    res.json({ ...profile.toObject(), posts });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
