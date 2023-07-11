@@ -47,3 +47,18 @@ const removeTemp = (path) => {
     if (err) throw err;
   });
 };
+
+exports.getImages = async (req, res) => {
+  const { path, sort, max } = req.body;
+  cloudinary.v2.search
+    .expression(`${path}`)
+    .sort_by('created_at', `${sort}`)
+    .max_results(max)
+    .execute()
+    .then((result) => {
+      return res.json(result);
+    })
+    .catch((err) => {
+      console.log(err.error.message);
+    });
+};
