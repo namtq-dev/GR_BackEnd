@@ -253,9 +253,9 @@ exports.changePassword = async (req, res) => {
 exports.getProfile = async (req, res) => {
   try {
     const { username } = req.params;
-    const profile = await User.find({ username }).select('-password'); // get user info except password
-    if (!profile._id) {
-      return res.status(404).json({ message: 'User not found.' });
+    const profile = await User.findOne({ username }).select('-password'); // get user info except password
+    if (!profile) {
+      return res.json({ message: 'User not found.' });
     }
     res.json(profile);
   } catch (error) {
