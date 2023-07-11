@@ -6,6 +6,6 @@ const { authUser } = require('../middleware/auth');
 const router = express.Router();
 
 router.post('/uploadImages', authUser, imageUpload, uploadImages);
-router.get('/getImages', getImages);
+router.post('/getImages', authUser, getImages);
 
 module.exports = router;
