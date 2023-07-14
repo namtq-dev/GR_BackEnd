@@ -362,17 +362,26 @@ exports.cancelFriendRequest = async (req, res) => {
         });
       }
 
-      await receiver.updateOne({
-        $pull: { requests: sender._id },
-      });
-      await receiver.updateOne({
-        $pull: { followers: sender._id },
-      });
-      await sender.updateOne({
-        $pull: { following: receiver._id },
-      });
+      if (
+        receiver.requests.includes(sender._id) &&
+        !receiver.friends.includes(sender._id)
+      ) {
+        await receiver.updateOne({
+          $pull: { requests: sender._id },
+        });
+        await receiver.updateOne({
+          $pull: { followers: sender._id },
+        });
+        await sender.updateOne({
+          $pull: { following: receiver._id },
+        });
 
-      res.json({ message: 'Your cancel request has been sent successfully' });
+        res.json({ message: 'Your cancel request has been sent successfully' });
+      } else {
+        return res.status(400).json({
+          message: "Can't send request to your friend",
+        });
+      }
     } else {
       return res
         .status(400)
@@ -391,20 +400,23 @@ exports.follow = async (req, res) => {
       if (!receiver) {
         return res.status(404).json({ message: 'User not found' });
       }
-      if (receiver.followers.includes(sender._id)) {
+      if (
+        !receiver.followers.includes(sender._id) &&
+        !sender.following.includes(receiver._id)
+      ) {
+        await receiver.updateOne({
+          $push: { followers: sender._id },
+        });
+        await sender.updateOne({
+          $push: { following: receiver._id },
+        });
+
+        res.json({ message: 'Your follow request has been sent successfully' });
+      } else {
         return res
           .status(400)
           .json({ message: 'The follow request has already been sent' });
       }
-
-      await receiver.updateOne({
-        $push: { followers: sender._id },
-      });
-      await sender.updateOne({
-        $push: { following: receiver._id },
-      });
-
-      res.json({ message: 'Your follow request has been sent successfully' });
     } else {
       return res
         .status(400)
@@ -423,7 +435,10 @@ exports.unfollow = async (req, res) => {
       if (!receiver) {
         return res.status(404).json({ message: 'User not found' });
       }
-      if (!receiver.followers.includes(sender._id)) {
+      if (
+        !receiver.followers.includes(sender._id) &&
+        !sender.following.includes(receiver._id)
+      ) {
         return res
           .status(400)
           .json({ message: 'You are not following this user' });
