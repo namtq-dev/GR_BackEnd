@@ -382,3 +382,67 @@ exports.cancelFriendRequest = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.follow = async (req, res) => {
+  try {
+    if (req.user.id !== req.params.id) {
+      const sender = await User.findById(req.user.id);
+      const receiver = await User.findById(req.params.id);
+      if (!receiver) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      if (receiver.followers.includes(sender._id)) {
+        return res
+          .status(400)
+          .json({ message: 'The follow request has already been sent' });
+      }
+
+      await receiver.updateOne({
+        $push: { followers: sender._id },
+      });
+      await sender.updateOne({
+        $push: { following: receiver._id },
+      });
+
+      res.json({ message: 'Your follow request has been sent successfully' });
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Can't send follow request to yourself" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.unfollow = async (req, res) => {
+  try {
+    if (req.user.id !== req.params.id) {
+      const sender = await User.findById(req.user.id);
+      const receiver = await User.findById(req.params.id);
+      if (!receiver) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      if (!receiver.followers.includes(sender._id)) {
+        return res
+          .status(400)
+          .json({ message: 'You are not following this user' });
+      }
+
+      await receiver.updateOne({
+        $pull: { followers: sender._id },
+      });
+      await sender.updateOne({
+        $pull: { following: receiver._id },
+      });
+
+      res.json({ message: 'Your unfollow request has been sent successfully' });
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Can't send unfollow request to yourself" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
