@@ -304,3 +304,43 @@ exports.updateDetails = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.addFriend = async (req, res) => {
+  try {
+    if (req.user.id !== req.params.id) {
+      const sender = await User.findById(req.user.id);
+      const receiver = await User.findById(req.params.id);
+      if (!receiver) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      if (receiver.requests.includes(sender._id)) {
+        return res
+          .status(400)
+          .json({ message: 'The request has already been sent' });
+      }
+      if (receiver.friends.includes(sender._id)) {
+        return res
+          .status(400)
+          .json({ message: "You're already friends on Aimer" });
+      }
+
+      await receiver.updateOne({
+        $push: { requests: sender._id },
+      });
+      await receiver.updateOne({
+        $push: { followers: sender._id },
+      });
+      await sender.updateOne({
+        $push: { following: receiver._id },
+      });
+
+      res.json({ message: 'Your friend request has been sent successfully' });
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Can't send friend request to yourself" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
