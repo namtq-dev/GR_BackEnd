@@ -253,15 +253,44 @@ exports.changePassword = async (req, res) => {
 
 exports.getProfile = async (req, res) => {
   try {
+    const user = await User.findById(req.user.id);
+    const friendship = {
+      friends: false,
+      following: false, // i follow u
+      requestSent: false, // i sent u a friend request
+      requestReceived: false, // u sent me a friend request
+    };
     const { username } = req.params;
+
     const profile = await User.findOne({ username }).select('-password'); // get user info except password
     if (!profile) {
       return res.json({ message: 'User not found.' });
     }
+
+    if (
+      user.friends.includes(profile._id) &&
+      profile.friends.includes(user._id)
+    ) {
+      friendship.friends = true;
+    }
+    if (
+      user.following.includes(profile._id) &&
+      profile.followers.includes(user._id)
+    ) {
+      friendship.following = true;
+    }
+    if (profile.requests.includes(user._id)) {
+      friendship.requestSent = true;
+    }
+    if (user.requests.includes(profile._id)) {
+      friendship.requestReceived = true;
+    }
+
     const posts = await Post.find({ user: profile._id })
       .populate('user')
       .sort({ createdAt: 'desc' });
-    res.json({ ...profile.toObject(), posts });
+
+    res.json({ ...profile.toObject(), posts, friendship });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
