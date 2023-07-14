@@ -543,3 +543,40 @@ exports.unfriend = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.deleteFriendRequest = async (req, res) => {
+  try {
+    if (req.user.id !== req.params.id) {
+      const receiver = await User.findById(req.user.id);
+      const sender = await User.findById(req.params.id);
+      if (!sender) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      if (receiver.requests.includes(sender._id)) {
+        await sender.update({
+          $pull: {
+            following: receiver._id,
+          },
+        });
+        await receiver.update({
+          $pull: {
+            requests: sender._id,
+            followers: sender._id,
+          },
+        });
+
+        res.json({
+          message: 'You have successfully decline a friend request',
+        });
+      } else {
+        return res
+          .status(400)
+          .json({ message: 'This friend request has already been declined' });
+      }
+    } else {
+      return res.status(400).json({ message: "Can't decline yourself" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
