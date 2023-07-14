@@ -17,6 +17,7 @@ const {
   follow,
   unfollow,
   acceptFriend,
+  unfriend,
 } = require('../controllers/user');
 const { authUser } = require('../middleware/auth');
 
@@ -39,5 +40,6 @@ router.patch('/cancelFriendRequest/:id', authUser, cancelFriendRequest);
 router.patch('/follow/:id', authUser, follow);
 router.patch('/unfollow/:id', authUser, unfollow);
 router.patch('/acceptFriend/:id', authUser, acceptFriend);
+router.patch('/unfriend/:id', authUser, unfriend);
 
 module.exports = router;

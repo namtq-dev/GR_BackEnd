@@ -482,7 +482,7 @@ exports.acceptFriend = async (req, res) => {
         });
 
         res.json({
-          message: 'Your have successfully become friend with this user',
+          message: 'You have successfully become friend with this user',
         });
       } else if (receiver.friends.includes(sender._id)) {
         return res
@@ -497,6 +497,47 @@ exports.acceptFriend = async (req, res) => {
       return res
         .status(400)
         .json({ message: "Can't accept request from yourself" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.unfriend = async (req, res) => {
+  try {
+    if (req.user.id !== req.params.id) {
+      const sender = await User.findById(req.user.id);
+      const receiver = await User.findById(req.params.id);
+      if (!receiver) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      if (
+        receiver.friends.includes(sender._id) &&
+        sender.friends.includes(receiver._id)
+      ) {
+        await sender.update({
+          $pull: {
+            friends: receiver._id,
+            following: receiver._id,
+            followers: receiver._id,
+          },
+        });
+        await receiver.update({
+          $pull: {
+            friends: sender._id,
+            following: sender._id,
+            followers: sender._id,
+          },
+        });
+
+        res.json({
+          message: 'You have successfully unfriend this user',
+        });
+      } else {
+        return res.status(400).json({ message: 'You two are not friends' });
+      }
+    } else {
+      return res.status(400).json({ message: "Can't unfriend yourself" });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
