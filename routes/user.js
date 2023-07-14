@@ -13,6 +13,7 @@ const {
   updateCoverPicture,
   updateDetails,
   addFriend,
+  cancelFriendRequest,
 } = require('../controllers/user');
 const { authUser } = require('../middleware/auth');
 
@@ -31,5 +32,6 @@ router.patch('/updateProfilePicture', authUser, updateProfilePicture);
 router.patch('/updateCoverPicture', authUser, updateCoverPicture);
 router.patch('/updateDetails', authUser, updateDetails);
 router.patch('/addFriend/:id', authUser, addFriend);
+router.patch('/cancelFriendRequest/:id', authUser, cancelFriendRequest);
 
 module.exports = router;

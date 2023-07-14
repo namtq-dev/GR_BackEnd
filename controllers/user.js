@@ -344,3 +344,41 @@ exports.addFriend = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.cancelFriendRequest = async (req, res) => {
+  try {
+    if (req.user.id !== req.params.id) {
+      const sender = await User.findById(req.user.id);
+      const receiver = await User.findById(req.params.id);
+      if (!receiver) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      if (
+        !receiver.requests.includes(sender._id) &&
+        !receiver.friends.includes(sender._id)
+      ) {
+        return res.status(200).json({
+          message: "You haven't sent friend request to this user yet",
+        });
+      }
+
+      await receiver.updateOne({
+        $pull: { requests: sender._id },
+      });
+      await receiver.updateOne({
+        $pull: { followers: sender._id },
+      });
+      await sender.updateOne({
+        $pull: { following: receiver._id },
+      });
+
+      res.json({ message: 'Your cancel request has been sent successfully' });
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Can't send request to yourself" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
