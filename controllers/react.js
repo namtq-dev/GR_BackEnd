@@ -33,7 +33,48 @@ exports.reactPost = async (req, res) => {
 // get all reacts for 1 post
 exports.getAllReacts = async (req, res) => {
   try {
-    const reacts = await React.find({ post: req.params.id });
+    const reactsArray = await React.find({ post: req.params.id });
+
+    const newReactsArray = reactsArray.reduce((group, react) => {
+      let key = react.react;
+      group[key] = group[key] || [];
+      group[key].push(react);
+
+      return group;
+    }, {});
+
+    const reacts = [
+      {
+        react: 'like',
+        count: newReactsArray.like ? newReactsArray.like.length : 0,
+      },
+      {
+        react: 'love',
+        count: newReactsArray.love ? newReactsArray.love.length : 0,
+      },
+      {
+        react: 'haha',
+        count: newReactsArray.haha ? newReactsArray.haha.length : 0,
+      },
+      {
+        react: 'wow',
+        count: newReactsArray.wow ? newReactsArray.wow.length : 0,
+      },
+      {
+        react: 'sad',
+        count: newReactsArray.sad ? newReactsArray.sad.length : 0,
+      },
+      {
+        react: 'angry',
+        count: newReactsArray.angry ? newReactsArray.angry.length : 0,
+      },
+    ];
+
+    // sort react by count
+    reacts.sort((react1, react2) => {
+      return react2.count - react1.count;
+    });
+
     const myReact = await React.findOne({
       post: req.params.id,
       reactBy: req.user.id,
