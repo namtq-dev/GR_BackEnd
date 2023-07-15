@@ -290,6 +290,7 @@ exports.getProfile = async (req, res) => {
       .populate('user')
       .sort({ createdAt: 'desc' });
 
+    await profile.populate('friends', 'firstName lastName username picture');
     res.json({ ...profile.toObject(), posts, friendship });
   } catch (error) {
     res.status(500).json({ message: error.message });

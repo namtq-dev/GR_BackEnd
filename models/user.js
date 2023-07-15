@@ -66,22 +66,30 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    friends: {
-      type: Array,
-      default: [],
-    },
-    following: {
-      type: Array,
-      default: [],
-    },
-    followers: {
-      type: Array,
-      default: [],
-    },
-    requests: {
-      type: Array,
-      default: [],
-    },
+    friends: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+    following: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+    followers: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+    requests: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
     search: [
       {
         user: {
