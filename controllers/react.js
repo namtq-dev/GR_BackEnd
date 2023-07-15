@@ -29,3 +29,14 @@ exports.reactPost = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// get all reacts for 1 post
+exports.getAllReacts = async (req, res) => {
+  try {
+    const reacts = await React.find({ post: req.params.id });
+
+    res.json({ reacts });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
