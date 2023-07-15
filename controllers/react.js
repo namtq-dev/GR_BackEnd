@@ -23,6 +23,8 @@ exports.reactPost = async (req, res) => {
         await React.findByIdAndUpdate(isReacted._id, { react: react });
       }
     }
+
+    return res.json({ message: 'OK' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
