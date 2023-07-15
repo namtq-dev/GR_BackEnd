@@ -80,7 +80,7 @@ exports.getAllReacts = async (req, res) => {
       reactBy: req.user.id,
     });
 
-    res.json({ reacts, myReact: myReact?.react });
+    res.json({ reacts, myReact: myReact?.react, total: reactsArray.length });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
