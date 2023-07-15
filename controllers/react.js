@@ -70,11 +70,6 @@ exports.getAllReacts = async (req, res) => {
       },
     ];
 
-    // sort react by count
-    reacts.sort((react1, react2) => {
-      return react2.count - react1.count;
-    });
-
     const myReact = await React.findOne({
       post: req.params.id,
       reactBy: req.user.id,
