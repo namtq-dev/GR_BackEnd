@@ -304,9 +304,13 @@ exports.getProfile = async (req, res) => {
 exports.updateProfilePicture = async (req, res) => {
   try {
     const { url } = req.body;
-    const updatedUser = await User.findByIdAndUpdate(req.user.id, {
-      picture: url,
-    });
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        picture: url,
+      },
+      { new: true }
+    );
     res.json(updatedUser.picture);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -316,9 +320,13 @@ exports.updateProfilePicture = async (req, res) => {
 exports.updateCoverPicture = async (req, res) => {
   try {
     const { url } = req.body;
-    const updatedUser = await User.findByIdAndUpdate(req.user.id, {
-      cover: url,
-    });
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        cover: url,
+      },
+      { new: true }
+    );
     res.json(updatedUser.cover);
   } catch (error) {
     res.status(500).json({ message: error.message });
