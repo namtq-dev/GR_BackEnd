@@ -37,7 +37,7 @@ const postSchema = new Schema(
         },
         commentAt: {
           type: Date,
-          default: new Date(),
+          required: true,
         },
       },
     ],
