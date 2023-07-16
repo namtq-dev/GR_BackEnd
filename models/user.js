@@ -139,7 +139,7 @@ const userSchema = new Schema(
         },
         savedAt: {
           type: Date,
-          default: new Date(),
+          required: true,
         },
       },
     ],
