@@ -288,6 +288,10 @@ exports.getProfile = async (req, res) => {
 
     const posts = await Post.find({ user: profile._id })
       .populate('user')
+      .populate(
+        'comments.commentBy',
+        'firstName lastName username picture commentAt'
+      )
       .sort({ createdAt: 'desc' });
 
     await profile.populate('friends', 'firstName lastName username picture');
