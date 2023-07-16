@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Post = require('../models/post');
 const User = require('../models/user');
 
@@ -12,29 +13,21 @@ exports.createPost = async (req, res) => {
 
 exports.getAllPosts = async (req, res) => {
   try {
-    const allPosts = [];
-
     // get all users i'm following
     const following = await User.findById(req.user.id).select('following');
     const myFollowing = following.following;
 
-    // get posts of users i'm following only
-    const promises = myFollowing.map((user) => {
-      return Post.find({ user })
-        .populate('user', 'firstName lastName username picture gender cover')
-        .populate('comments.commentBy', 'firstName lastName username picture')
-        .sort({ createdAt: -1 })
-        .limit(5);
-    });
-    const followingPosts = (await Promise.all(promises)).flat();
-    allPosts.push(...followingPosts);
-
-    const myPost = await Post.find({ user: req.user.id })
+    // get posts of users i'm following and my posts only
+    const allPosts = await Post.find({
+      $or: [
+        { user: { $in: myFollowing } },
+        { user: { $eq: mongoose.Types.ObjectId(req.user.id) } },
+      ],
+    })
       .populate('user', 'firstName lastName username picture gender cover')
       .populate('comments.commentBy', 'firstName lastName username picture')
       .sort({ createdAt: -1 })
       .limit(5);
-    allPosts.push(...myPost);
 
     allPosts.sort((post1, post2) => {
       return post2.createdAt - post1.createdAt;
