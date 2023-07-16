@@ -5,6 +5,11 @@ const User = require('../models/user');
 exports.createPost = async (req, res) => {
   try {
     const post = await new Post(req.body).save();
+    await post.populate(
+      'user',
+      'firstName lastName username picture gender cover'
+    );
+
     res.status(200).json(post);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -27,7 +32,7 @@ exports.getAllPosts = async (req, res) => {
       .populate('user', 'firstName lastName username picture gender cover')
       .populate('comments.commentBy', 'firstName lastName username picture')
       .sort({ createdAt: -1 })
-      .limit(5);
+      .limit(30);
 
     allPosts.sort((post1, post2) => {
       return post2.createdAt - post1.createdAt;
