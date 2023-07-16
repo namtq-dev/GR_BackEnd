@@ -1,4 +1,5 @@
 const Post = require('../models/post');
+const User = require('../models/user');
 
 exports.createPost = async (req, res) => {
   try {
@@ -11,10 +12,34 @@ exports.createPost = async (req, res) => {
 
 exports.getAllPosts = async (req, res) => {
   try {
-    const posts = await Post.find()
-      .populate('user', 'firstName lastName username picture gender')
-      .sort({ createdAt: 'desc' });
-    return res.json(posts);
+    const allPosts = [];
+
+    // get all users i'm following
+    const following = await User.findById(req.user.id).select('following');
+    const myFollowing = following.following;
+
+    // get posts of users i'm following only
+    const promises = myFollowing.map((user) => {
+      return Post.find({ user })
+        .populate('user', 'firstName lastName username picture gender cover')
+        .populate('comments.commentBy', 'firstName lastName username picture')
+        .sort({ createdAt: -1 })
+        .limit(5);
+    });
+    const followingPosts = (await Promise.all(promises)).flat();
+    allPosts.push(...followingPosts);
+
+    const myPost = await Post.find({ user: req.user.id })
+      .populate('user', 'firstName lastName username picture gender cover')
+      .populate('comments.commentBy', 'firstName lastName username picture')
+      .sort({ createdAt: -1 })
+      .limit(5);
+    allPosts.push(...myPost);
+
+    allPosts.sort((post1, post2) => {
+      return post2.createdAt - post1.createdAt;
+    });
+    res.json(allPosts);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
