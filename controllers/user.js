@@ -635,3 +635,34 @@ exports.search = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.addToSearchHistory = async (req, res) => {
+  try {
+    const { searchedUser } = req.body;
+    const search = {
+      user: searchedUser,
+      createdAt: new Date(),
+    };
+
+    const user = await User.findById(req.user.id);
+    const checkHistory = user.search.find(
+      (item) => item.user.toString() === searchedUser
+    );
+
+    if (checkHistory) {
+      await User.updateOne(
+        {
+          _id: req.user.id,
+          'search._id': checkHistory._id,
+        },
+        { $set: { 'search.$.createdAt': new Date() } }
+      );
+    } else {
+      await User.findByIdAndUpdate(req.user.id, {
+        $push: { search },
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
