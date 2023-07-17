@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const {
   validateEmail,
   validateLength,
@@ -688,6 +689,27 @@ exports.deleteSearchHistory = async (req, res) => {
     );
 
     res.json({ status: 'OK' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getFriendsPage = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id)
+      .select('friends requests')
+      .populate('friends', 'firstName lastName picture username')
+      .populate('requests', 'firstName lastName picture username');
+
+    const sentRequests = await User.find({
+      requests: mongoose.Types.ObjectId(req.user.id),
+    }).select('firstName lastName picture username');
+
+    res.json({
+      friends: user.friends,
+      requests: user.requests,
+      sentRequests,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
