@@ -21,6 +21,7 @@ const {
   deleteFriendRequest,
   search,
   addToSearchHistory,
+  getSearchHistory,
 } = require('../controllers/user');
 const { authUser } = require('../middleware/auth');
 
@@ -51,5 +52,6 @@ router.delete('/deleteFriendRequest/:id', authUser, deleteFriendRequest);
 
 router.post('/search/:searchTerm', authUser, search);
 router.patch('/addToSearchHistory', authUser, addToSearchHistory);
+router.get('/getSearchHistory', authUser, getSearchHistory);
 
 module.exports = router;
