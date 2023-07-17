@@ -19,6 +19,7 @@ const {
   acceptFriend,
   unfriend,
   deleteFriendRequest,
+  search,
 } = require('../controllers/user');
 const { authUser } = require('../middleware/auth');
 
@@ -46,5 +47,7 @@ router.patch('/unfollow/:id', authUser, unfollow);
 router.patch('/acceptFriend/:id', authUser, acceptFriend);
 router.delete('/unfriend/:id', authUser, unfriend);
 router.delete('/deleteFriendRequest/:id', authUser, deleteFriendRequest);
+
+router.post('/search/:searchTerm', authUser, search);
 
 module.exports = router;
