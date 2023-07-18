@@ -27,8 +27,12 @@ const postSchema = new Schema(
       {
         comment: {
           type: String,
+          required: true,
         },
         image: {
+          type: String,
+        },
+        score: {
           type: String,
         },
         commentBy: {

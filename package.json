@@ -20,7 +20,9 @@
     "jsonwebtoken": "^9.0.0",
     "mongodb": "^4.3.1",
     "mongoose": "^6.10.4",
+    "natural": "^6.5.0",
     "nodemailer": "^6.9.1",
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "stopword": "^2.0.8"
   }
 }
