@@ -42,7 +42,7 @@ exports.sendVerificationEmail = (email, name, url) => {
       "
     >
       <img
-        src="https://res.cloudinary.com/dmhcnhtng/image/upload/v1645134414/logo_cs1si5.png"
+        src="https://res.cloudinary.com/djccswary/image/upload/v1689759307/aimer2_dbkijz.png"
         alt=""
         style="width: 30px; margin-right:10px"
       />
