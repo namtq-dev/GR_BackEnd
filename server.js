@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const fileupload = require('express-fileupload');
 const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
+const compression = require('compression');
 const { readdirSync } = require('fs');
 
 dotenv.config();
@@ -28,6 +30,9 @@ var corsOptions = {
 };
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(compression());
 app.use(fileupload({ useTempFiles: true }));
 
 if (process.env.NODE_ENV !== 'production') {
