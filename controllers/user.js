@@ -162,6 +162,18 @@ exports.login = async (req, res) => {
       '1d',
       process.env.TOKEN_SECRET
     );
+    const refreshToken = generateToken(
+      { id: user._id },
+      '14d',
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      path: '/auth/refreshToken',
+      maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days
+    });
+
     res.send({
       id: user._id,
       username: user.username,
@@ -170,6 +182,18 @@ exports.login = async (req, res) => {
       lastName: user.lastName,
       loginToken,
       verified: user.verified,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.logout = async (req, res) => {
+  try {
+    res.clearCookie('refreshToken', { path: '/auth/refreshToken' });
+
+    res.json({
+      message: 'OK',
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
