@@ -74,11 +74,31 @@ exports.register = async (req, res) => {
       gender,
     }).save();
 
-    const emailVerificationToken = generateToken({ id: user._id }, '30m');
+    const emailVerificationToken = generateToken(
+      { id: user._id },
+      '30m',
+      process.env.TOKEN_SECRET
+    );
     const emailVerificationUrl = `${process.env.FRONTEND_BASE_URL}/activate/${emailVerificationToken}`;
     sendVerificationEmail(user.email, user.firstName, emailVerificationUrl);
 
-    const loginToken = generateToken({ id: user._id }, '7d');
+    const loginToken = generateToken(
+      { id: user._id },
+      '1d',
+      process.env.TOKEN_SECRET
+    );
+    const refreshToken = generateToken(
+      { id: user._id },
+      '14d',
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      path: '/auth/refreshToken',
+      maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days
+    });
+
     res.send({
       id: user._id,
       username: user.username,
@@ -137,7 +157,11 @@ exports.login = async (req, res) => {
     }
 
     // login success
-    const loginToken = generateToken({ id: user._id }, '7d');
+    const loginToken = generateToken(
+      { id: user._id },
+      '1d',
+      process.env.TOKEN_SECRET
+    );
     res.send({
       id: user._id,
       username: user.username,
@@ -162,7 +186,11 @@ exports.sendVerification = async (req, res) => {
         .json({ message: 'This account has already been verified.' });
     }
 
-    const emailVerificationToken = generateToken({ id: user._id }, '30m');
+    const emailVerificationToken = generateToken(
+      { id: user._id },
+      '30m',
+      process.env.TOKEN_SECRET
+    );
     const emailVerificationUrl = `${process.env.FRONTEND_BASE_URL}/activate/${emailVerificationToken}`;
     sendVerificationEmail(user.email, user.firstName, emailVerificationUrl);
 
