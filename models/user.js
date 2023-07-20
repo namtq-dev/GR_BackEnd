@@ -27,10 +27,15 @@ const userSchema = new Schema(
       type: String,
       required: [true, 'email is required'],
       trim: true,
+      unique: [true, 'email address is already exist'],
     },
     password: {
       type: String,
       required: [true, 'password is required'],
+    },
+    status: {
+      type: String,
+      default: 'idle',
     },
     picture: {
       type: String,
@@ -150,6 +155,7 @@ const userSchema = new Schema(
     ],
   },
   {
+    collection: 'users',
     timestamps: true,
   }
 );
