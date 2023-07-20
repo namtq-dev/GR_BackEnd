@@ -25,6 +25,7 @@ const {
   getSearchHistory,
   deleteSearchHistory,
   getFriendsPage,
+  refreshToken,
 } = require('../controllers/user');
 const { authUser } = require('../middleware/auth');
 
@@ -34,6 +35,7 @@ router.post('/register', register);
 router.post('/activate', authUser, activateAccount);
 router.post('/login', login);
 router.post('/logout', authUser, logout);
+router.post('/auth/refreshToken', refreshToken);
 
 router.post('/sendVerification', authUser, sendVerification);
 router.post('/findUser', findUser);

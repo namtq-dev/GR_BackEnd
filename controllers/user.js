@@ -105,6 +105,7 @@ exports.register = async (req, res) => {
       picture: user.picture,
       firstName: user.firstName,
       lastName: user.lastName,
+      status: user.status,
       loginToken,
       verified: user.verified,
       message:
@@ -180,6 +181,7 @@ exports.login = async (req, res) => {
       picture: user.picture,
       firstName: user.firstName,
       lastName: user.lastName,
+      status: user.status,
       loginToken,
       verified: user.verified,
     });
@@ -194,6 +196,41 @@ exports.logout = async (req, res) => {
 
     res.json({
       message: 'OK',
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.refreshToken = async (req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) {
+      return res.status(401).json({ message: 'Please login again.' });
+    }
+
+    const userId = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+    const user = await User.findById(userId.id);
+    if (!user) {
+      return res.status(401).json({ message: 'Please login again.' });
+    }
+
+    const loginToken = generateToken(
+      { id: user._id },
+      '1d',
+      process.env.TOKEN_SECRET
+    );
+
+    res.send({
+      id: user._id,
+      username: user.username,
+      picture: user.picture,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      status: user.status,
+      loginToken,
+      verified: user.verified,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
