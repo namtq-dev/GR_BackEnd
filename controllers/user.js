@@ -718,9 +718,32 @@ exports.deleteFriendRequest = async (req, res) => {
 exports.search = async (req, res) => {
   try {
     const searchTerm = req.params.searchTerm;
-    const results = await User.find({ $text: { $search: searchTerm } })
+    const results = await User.find({
+      $text: { $search: searchTerm, $caseSensitive: false },
+    })
       .select('firstName lastName username picture')
       .limit(20);
+
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.searchMess = async (req, res) => {
+  try {
+    const searchTerm = req.query.search;
+    if (!searchTerm) {
+      return res.json({ message: 'Oops... Something went wrong!' });
+    }
+
+    const results = await User.find({
+      $or: [
+        { firstName: { $regex: searchTerm, $options: 'i' } },
+        { lastName: { $regex: searchTerm, $options: 'i' } },
+        { email: { $regex: searchTerm, $options: 'i' } },
+      ],
+    });
 
     res.json(results);
   } catch (error) {
