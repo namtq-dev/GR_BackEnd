@@ -28,6 +28,7 @@ exports.createOrOpenConversation = async (req, res) => {
     let receiver = await User.findById(receiverId);
     let newConverInfos = {
       name: `${receiver.firstName} ${receiver.lastName}`,
+      picture: receiver.picture,
       isGroup: false,
       users: [senderId, receiverId],
     };
