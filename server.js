@@ -24,8 +24,18 @@ async function connectDB() {
 
 const app = express();
 
+const whitelist = [
+  process.env.FRONTEND_BASE_URL,
+  process.env.FRONTEND_BASE_URL_MESS,
+];
 var corsOptions = {
-  origin: process.env.FRONTEND_BASE_URL || 'http://localhost:3000',
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 app.use(cors(corsOptions));
