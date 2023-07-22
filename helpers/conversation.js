@@ -58,3 +58,15 @@ exports.getUserConversation = async (userId) => {
 
   return conversations;
 };
+
+exports.updateLatestMessage = async (id, message) => {
+  const updatedConver = await Conversation.findByIdAndUpdate(
+    id,
+    {
+      latestMessage: message,
+    },
+    { new: true }
+  );
+
+  return updatedConver;
+};
