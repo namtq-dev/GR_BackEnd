@@ -23,6 +23,7 @@ exports.register = async (req, res) => {
       lastName,
       email,
       password,
+      picture,
       bYear,
       bMonth,
       bDay,
@@ -68,6 +69,7 @@ exports.register = async (req, res) => {
       email,
       password: cryptedPassword,
       username: generatedUsername,
+      picture,
       bYear,
       bMonth,
       bDay,
@@ -80,7 +82,7 @@ exports.register = async (req, res) => {
       process.env.TOKEN_SECRET
     );
     const emailVerificationUrl = `${process.env.FRONTEND_BASE_URL}/activate/${emailVerificationToken}`;
-    sendVerificationEmail(user.email, user.firstName, emailVerificationUrl);
+    // sendVerificationEmail(user.email, user.firstName, emailVerificationUrl);
 
     const loginToken = generateToken(
       { id: user._id },
