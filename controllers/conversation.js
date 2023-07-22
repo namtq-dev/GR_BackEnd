@@ -1,6 +1,7 @@
 const {
   checkConversationExist,
   populateConversation,
+  getUserConversation,
 } = require('../helpers/conversation');
 const Conversation = require('../models/conversation');
 const User = require('../models/user');
@@ -43,6 +44,18 @@ exports.createOrOpenConversation = async (req, res) => {
     );
 
     res.status(200).json(populatedConver);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getAllConversations = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const conversations = await getUserConversation(userId);
+
+    res.status(200).json(conversations);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
