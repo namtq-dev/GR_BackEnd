@@ -30,3 +30,13 @@ exports.populateMessage = async (id) => {
 
   return msg;
 };
+
+exports.getAllConverMessages = async (converId) => {
+  const messages = await Message.find({ conversation: converId })
+    .populate('sender', 'firstName lastName email picture status')
+    .populate('conversation');
+
+  if (!messages) return { message: 'Oops... Something went wrong!' };
+
+  return messages;
+};

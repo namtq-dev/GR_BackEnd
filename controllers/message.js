@@ -1,5 +1,9 @@
 const { updateLatestMessage } = require('../helpers/conversation');
-const { createMessage, populateMessage } = require('../helpers/message');
+const {
+  createMessage,
+  populateMessage,
+  getAllConverMessages,
+} = require('../helpers/message');
 
 exports.sendMessage = async (req, res) => {
   try {
@@ -34,7 +38,14 @@ exports.sendMessage = async (req, res) => {
 
 exports.getMessages = async (req, res) => {
   try {
-    res.send('get');
+    const { converId } = req.params;
+    if (!converId) {
+      res.status(400).json({ message: 'Conversation not found' });
+    }
+
+    const messages = await getAllConverMessages(converId);
+
+    res.json(messages);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
