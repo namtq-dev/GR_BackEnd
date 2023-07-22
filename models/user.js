@@ -51,20 +51,21 @@ const userSchema = new Schema(
       type: String,
       required: [true, 'gender is required'],
       trim: true,
+      default: 'male',
     },
     bYear: {
       type: Number,
-      required: true,
+      // required: true,
       trim: true,
     },
     bMonth: {
       type: Number,
-      required: true,
+      // required: true,
       trim: true,
     },
     bDay: {
       type: Number,
-      required: true,
+      // required: true,
       trim: true,
     },
     verified: {
