@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Schema.Types;
 
 const conversationSchema = mongoose.Schema(
@@ -42,4 +42,4 @@ const Conversation =
   mongoose.models.Conversation ||
   mongoose.model('Conversation', conversationSchema);
 
-export default Conversation;
+module.exports = Conversation;
