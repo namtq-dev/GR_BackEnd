@@ -4,7 +4,7 @@ const { authUser } = require('../middleware/auth');
 
 const router = express.Router();
 
-router.post('/message', authUser, sendMessage);
-router.get('/message/:converId', authUser, getMessages);
+router.post('/messages', authUser, sendMessage);
+router.get('/messages/:converId', authUser, getMessages);
 
 module.exports = router;
