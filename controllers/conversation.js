@@ -25,10 +25,10 @@ exports.createOrOpenConversation = async (req, res) => {
       return res.json(existedConversation);
     }
 
-    let receiver = await User.findById(receiverId);
+    // let receiver = await User.findById(receiverId);
     let newConverInfos = {
-      name: `${receiver.firstName} ${receiver.lastName}`,
-      picture: receiver.picture,
+      name: 'conversation name',
+      picture: 'conversation picture',
       isGroup: false,
       users: [senderId, receiverId],
     };
