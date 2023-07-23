@@ -743,6 +743,9 @@ exports.searchMess = async (req, res) => {
         { email: { $regex: searchTerm, $options: 'i' } },
       ],
     })
+      .find({
+        _id: { $ne: req.user.id },
+      })
       .select('firstName lastName username picture status')
       .limit(20);
 
