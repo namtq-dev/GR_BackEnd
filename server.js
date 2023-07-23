@@ -1,4 +1,5 @@
 const { Server } = require('socket.io');
+const { socketServices } = require('./socket');
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -68,4 +69,5 @@ const io = new Server(server, {
 
 io.on('connection', (socket) => {
   console.log('Client socket connected successfully');
+  socketServices(socket);
 });
