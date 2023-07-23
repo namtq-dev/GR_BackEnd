@@ -1,3 +1,4 @@
+const { Server } = require('socket.io');
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -55,6 +56,16 @@ readdirSync('./routes').map((route) =>
 );
 
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}...`);
+});
+
+// Socket.io
+const io = new Server(server, {
+  pingTimeout: 60000, // 1 min timeout
+  cors: whitelist,
+});
+
+io.on('connection', (socket) => {
+  console.log('Client socket connected successfully');
 });
