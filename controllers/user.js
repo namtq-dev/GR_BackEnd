@@ -739,11 +739,12 @@ exports.searchMess = async (req, res) => {
 
     const results = await User.find({
       $or: [
-        { firstName: { $regex: searchTerm, $options: 'i' } },
-        { lastName: { $regex: searchTerm, $options: 'i' } },
+        { username: { $regex: searchTerm, $options: 'i' } },
         { email: { $regex: searchTerm, $options: 'i' } },
       ],
-    });
+    })
+      .select('firstName lastName username picture status')
+      .limit(20);
 
     res.json(results);
   } catch (error) {
