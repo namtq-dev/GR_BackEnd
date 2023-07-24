@@ -27,7 +27,7 @@ exports.socketServices = (socket, io) => {
   // user join a conversation room
   socket.on('join conversation', (conversationId) => {
     socket.join(conversationId);
-    // console.log(conversationId);
+    // console.log('user open conversation: ', conversationId);
   });
 
   // send and receive message
@@ -40,5 +40,16 @@ exports.socketServices = (socket, io) => {
       if (user._id === message.sender._id) return;
       socket.in(user._id).emit('receive message', message);
     });
+  });
+
+  // typing
+  socket.on('typing', (conversationId) => {
+    // console.log('typing in ', conversationId);
+    socket.in(conversationId).emit('typing', conversationId);
+  });
+
+  socket.on('stop typing', (conversationId) => {
+    // console.log('stop typing in ', conversationId);
+    socket.in(conversationId).emit('stop typing');
   });
 };
