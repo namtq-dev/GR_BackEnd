@@ -55,4 +55,20 @@ exports.socketServices = (socket, io) => {
     // console.log('stop typing in ', conversationId);
     socket.in(conversationId).emit('stop typing');
   });
+
+  // video call
+  socket.on('call user', (data) => {
+    // console.log(data);
+    let callReceiverId = data.userToCall;
+    let callReceiver = onlineUsers.find(
+      (user) => user.userId === callReceiverId
+    );
+
+    io.to(callReceiver.socketId).emit('incoming call', {
+      signal: data.signal,
+      from: data.from,
+      name: data.name,
+      picture: data.picture,
+    });
+  });
 };
