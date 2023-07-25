@@ -7,7 +7,7 @@ exports.socketServices = (socket, io) => {
 
     // add new user to online list
     if (!onlineUsers.some((user) => user.userId === userId)) {
-      console.log(`user ${userId} is online`);
+      // console.log(`user ${userId} is online`);
       onlineUsers.push({ userId, socketId: socket.id });
     }
 
@@ -21,7 +21,7 @@ exports.socketServices = (socket, io) => {
   // socket disconnect
   socket.on('disconnect', () => {
     onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
-    console.log('user has just disconnected');
+    // console.log('user has just disconnected');
 
     // send online users list to FE
     io.emit('online users list', onlineUsers);
@@ -59,7 +59,8 @@ exports.socketServices = (socket, io) => {
   // video call
   // make a call
   socket.on('call user', (data) => {
-    // console.log(data);
+    console.log('user make a call request');
+
     let callReceiverId = data.userToCall;
     let callReceiver = onlineUsers.find(
       (user) => user.userId === callReceiverId
@@ -75,6 +76,15 @@ exports.socketServices = (socket, io) => {
 
   // answer call
   socket.on('answer call', (data) => {
+    console.log('call accepted with receiver socketId', data.to);
+
     io.to(data.to).emit('call accepted', data.signal);
+  });
+
+  // end call
+  socket.on('end call', (socketId) => {
+    console.log('user end call', socketId);
+
+    io.to(socketId).emit('call ended');
   });
 };

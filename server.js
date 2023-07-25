@@ -68,6 +68,6 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
-  console.log('Socket client connected successfully');
+  // console.log('Socket client connected successfully');
   socketServices(socket, io);
 });
