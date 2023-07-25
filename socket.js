@@ -67,8 +67,8 @@ exports.socketServices = (socket, io) => {
     io.to(callReceiver.socketId).emit('incoming call', {
       signal: data.signal,
       from: data.from,
-      name: data.name,
-      picture: data.picture,
+      name: data.myName,
+      picture: data.myPicture,
     });
   });
 };
