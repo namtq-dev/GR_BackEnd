@@ -13,6 +13,9 @@ exports.socketServices = (socket, io) => {
 
     // send online users list to FE
     io.emit('online users list', onlineUsers);
+
+    // send socketId to start video call
+    io.emit('setup socket', socket.id);
   });
 
   // socket disconnect
