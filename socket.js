@@ -57,6 +57,7 @@ exports.socketServices = (socket, io) => {
   });
 
   // video call
+  // make a call
   socket.on('call user', (data) => {
     // console.log(data);
     let callReceiverId = data.userToCall;
@@ -70,5 +71,10 @@ exports.socketServices = (socket, io) => {
       name: data.myName,
       picture: data.myPicture,
     });
+  });
+
+  // answer call
+  socket.on('answer call', (data) => {
+    io.to(data.to).emit('call accepted', data.signal);
   });
 };
