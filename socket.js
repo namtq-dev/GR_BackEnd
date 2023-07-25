@@ -59,12 +59,12 @@ exports.socketServices = (socket, io) => {
   // video call
   // make a call
   socket.on('call user', (data) => {
-    console.log('user make a call request');
-
     let callReceiverId = data.userToCall;
     let callReceiver = onlineUsers.find(
       (user) => user.userId === callReceiverId
     );
+
+    console.log('user make a call request to: ', callReceiver.socketId);
 
     io.to(callReceiver.socketId).emit('incoming call', {
       signal: data.signal,
@@ -83,7 +83,7 @@ exports.socketServices = (socket, io) => {
 
   // end call
   socket.on('end call', (socketId) => {
-    console.log('user end call', socketId);
+    console.log('user end call, send end signal to other users:', socketId);
 
     io.to(socketId).emit('call ended');
   });
