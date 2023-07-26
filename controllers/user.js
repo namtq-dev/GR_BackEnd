@@ -82,7 +82,7 @@ exports.register = async (req, res) => {
       process.env.TOKEN_SECRET
     );
     const emailVerificationUrl = `${process.env.FRONTEND_BASE_URL}/activate/${emailVerificationToken}`;
-    // sendVerificationEmail(user.email, user.firstName, emailVerificationUrl);
+    sendVerificationEmail(user.email, user.firstName, emailVerificationUrl);
 
     const loginToken = generateToken(
       { id: user._id },
@@ -149,7 +149,10 @@ exports.activateAccount = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).populate(
+      'friends',
+      'firstName lastName username picture'
+    );
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password.' });
     }
@@ -184,6 +187,7 @@ exports.login = async (req, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       status: user.status,
+      friends: user.friends,
       loginToken,
       verified: user.verified,
     });
