@@ -10,7 +10,7 @@ exports.sendMessage = async (req, res) => {
   try {
     const userId = req.user.id;
     const { message, converId, files } = req.body;
-    if (!converId || (!message && !files)) {
+    if (!converId || (!message && files.length === 0)) {
       return res
         .status(400)
         .json({ message: 'Invalid conversation or message' });
