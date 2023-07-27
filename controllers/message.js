@@ -4,6 +4,7 @@ const {
   populateMessage,
   getAllConverMessages,
 } = require('../helpers/message');
+const Conversation = require('../models/conversation');
 
 exports.sendMessage = async (req, res) => {
   try {
@@ -13,6 +14,11 @@ exports.sendMessage = async (req, res) => {
       return res
         .status(400)
         .json({ message: 'Invalid conversation or message' });
+    }
+
+    const conver = await Conversation.findById(converId);
+    if (!conver) {
+      return res.status(400).json({ message: 'Invalid conversation' });
     }
 
     const messageData = {
