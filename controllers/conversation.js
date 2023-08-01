@@ -61,3 +61,39 @@ exports.getAllConversations = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.createGroup = async (req, res) => {
+  const DEFAULT_GROUP_PIC =
+    'https://res.cloudinary.com/djccswary/image/upload/v1690879443/group_zbbkg3.png';
+
+  try {
+    const { groupName, users } = req.body;
+
+    if (!groupName || users.length < 1) {
+      res.status(400).json({ message: 'Oops... Something went wrong' });
+    }
+
+    const currentUserId = req.user.id;
+    users.push(currentUserId);
+
+    let newConverInfos = {
+      name: groupName,
+      users,
+      isGroup: true,
+      admin: currentUserId,
+      picture: DEFAULT_GROUP_PIC,
+    };
+
+    const newConver = await Conversation.create(newConverInfos);
+
+    const populatedConver = await populateConversation(
+      newConver._id,
+      'users admin',
+      'firstName lastName username picture status'
+    );
+
+    res.status(200).json(populatedConver);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
