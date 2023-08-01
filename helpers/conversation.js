@@ -1,26 +1,46 @@
 const Conversation = require('../models/conversation');
 const User = require('../models/user');
 
-exports.checkConversationExist = async (senderId, receiverId) => {
-  let conversations = await Conversation.find({
-    isGroup: false,
-    $and: [
-      { users: { $elemMatch: { $eq: senderId } } },
-      { users: { $elemMatch: { $eq: receiverId } } },
-    ],
-  })
-    .populate('users', 'firstName lastName username email picture status')
-    .populate('latestMessage');
+exports.checkConversationExist = async (senderId, receiverId, isGroup) => {
+  if (!isGroup) {
+    let conversations = await Conversation.find({
+      isGroup: false,
+      $and: [
+        { users: { $elemMatch: { $eq: senderId } } },
+        { users: { $elemMatch: { $eq: receiverId } } },
+      ],
+    })
+      .populate('users', 'firstName lastName username email picture status')
+      .populate('latestMessage');
 
-  if (!conversations) return false;
+    if (!conversations) return false;
 
-  // get the user talking to you
-  conversation = await User.populate(conversations, {
-    path: 'latestMessage.sender',
-    select: 'firstName lastName username email picture status',
-  });
+    // get the user talking to you
+    conversations = await User.populate(conversations, {
+      path: 'latestMessage.sender',
+      select: 'firstName lastName username email picture status',
+    });
 
-  return conversations[0];
+    return conversations[0];
+  } else {
+    // check if group chat exist
+    let conver = await Conversation.findById(isGroup)
+      .populate(
+        'users admin',
+        'firstName lastName username email picture status'
+      )
+      .populate('latestMessage');
+
+    if (!conver) return false;
+
+    // get the users in group chat
+    conver = await User.populate(conver, {
+      path: 'latestMessage.sender',
+      select: 'firstName lastName username email picture status',
+    });
+
+    return conver;
+  }
 };
 
 exports.populateConversation = async (id, field, attributes) => {
