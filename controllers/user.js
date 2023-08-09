@@ -297,6 +297,7 @@ exports.sendResetPasswordCode = async (req, res) => {
     const savedCode = await new Code({
       code: newCode,
       userId: user._id,
+      createdAt: new Date(),
     }).save();
     sendResetPasswordEmail(user.email, user.firstName, savedCode.code);
 
@@ -317,6 +318,16 @@ exports.validateResetCode = async (req, res) => {
     if (codeFoundInDb.code !== code) {
       return res.status(400).json({
         message: 'Invalid password reset code.',
+      });
+    }
+
+    const currentTime = new Date();
+    const isValidTime =
+      currentTime.getTime() - codeFoundInDb.createdAt.getTime();
+    if (isValidTime > 30 * 60 * 1000) {
+      // code only valid in 30m
+      return res.status(400).json({
+        message: 'Password reset code expired.',
       });
     }
 

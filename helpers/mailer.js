@@ -129,7 +129,7 @@ exports.sendResetPasswordEmail = (email, name, code) => {
       "
     >
       <img
-        src="https://res.cloudinary.com/dmhcnhtng/image/upload/v1645134414/logo_cs1si5.png"
+        src="https://res.cloudinary.com/djccswary/image/upload/v1690365859/aimer2_ohq6st.png"
         alt=""
         style="width: 30px; margin-right:10px"
       />

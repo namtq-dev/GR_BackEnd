@@ -12,6 +12,10 @@ const codeSchema = new Schema({
     ref: 'User',
     required: true,
   },
+  createdAt: {
+    type: Date,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model('Code', codeSchema);
