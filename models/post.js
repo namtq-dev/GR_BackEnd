@@ -45,6 +45,9 @@ const postSchema = new Schema(
         },
       },
     ],
+    score: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

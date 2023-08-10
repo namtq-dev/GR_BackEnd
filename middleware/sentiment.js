@@ -3,28 +3,37 @@ const sw = require('stopword');
 
 module.exports = function (req, res, next) {
   try {
-    const { comment } = req.body;
+    const { comment = '', text = '' } = req.body;
+
+    let content = '';
+    if (!comment && !text) {
+      return next();
+    } else if (!comment) {
+      content = text;
+    } else {
+      content = comment;
+    }
 
     // Preprocess:
     // 1. Convert common contractions to standard lexicon
     // 2. Convert text to lowercase
     // 3. Remove special characters
-    const uniformComment = expandContractions(comment)
+    const uniformContent = expandContractions(content)
       .toLowerCase()
       .replace(/[^a-zA-Z\s]+/g, '');
 
     // Tokenization
     const tokenizer = new WordTokenizer();
-    const tokens = tokenizer.tokenize(uniformComment);
+    const tokens = tokenizer.tokenize(uniformContent);
 
     // Remove stop words
-    const filteredComment = sw.removeStopwords(tokens);
+    const filteredContent = sw.removeStopwords(tokens);
 
     // Comment sentiment
     const analyzer = new SentimentAnalyzer('English', PorterStemmer, 'afinn');
-    const analysis = analyzer.getSentiment(filteredComment);
+    const analysis = analyzer.getSentiment(filteredContent);
 
-    req.body.analysis = analysis;
+    req.body.score = analysis;
     next();
   } catch (error) {
     return res.status(500).json({ message: error.message });
