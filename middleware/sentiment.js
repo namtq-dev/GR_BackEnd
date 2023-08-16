@@ -1,5 +1,9 @@
-const { WordTokenizer, SentimentAnalyzer, PorterStemmer } = require('natural');
 const sw = require('stopword');
+const natural = require('natural');
+const languageDetect = require('languagedetect');
+
+const detector = new languageDetect();
+const { WordTokenizer, SentimentAnalyzer, PorterStemmer } = natural;
 
 module.exports = function (req, res, next) {
   try {
@@ -14,27 +18,47 @@ module.exports = function (req, res, next) {
       content = comment;
     }
 
-    // Preprocess:
-    // 1. Convert common contractions to standard lexicon
-    // 2. Convert text to lowercase
-    // 3. Remove special characters
-    const uniformContent = expandContractions(content)
-      .toLowerCase()
-      .replace(/[^a-zA-Z\s]+/g, '');
+    // Detect VN or EN
+    let language = detector.detect(content, 1)[0];
 
-    // Tokenization
-    const tokenizer = new WordTokenizer();
-    const tokens = tokenizer.tokenize(uniformContent);
+    if (language[0] === 'vietnamese') {
+      natural.BayesClassifier.load(
+        'middleware/nlp_model/vnclassifier.json',
+        null,
+        function (err, classifier) {
+          let score = 0;
+          const analysis = classifier.classify(content);
+          if (analysis === 'NEG') {
+            score = -99;
+          }
 
-    // Remove stop words
-    const filteredContent = sw.removeStopwords(tokens);
+          req.body.score = score;
+          return next();
+        }
+      );
+    } else {
+      // Preprocess:
+      // 1. Convert common contractions to standard lexicon
+      // 2. Convert text to lowercase
+      // 3. Remove special characters
+      const uniformContent = expandContractions(content)
+        .toLowerCase()
+        .replace(/[^a-zA-Z\s]+/g, '');
 
-    // Comment sentiment
-    const analyzer = new SentimentAnalyzer('English', PorterStemmer, 'afinn');
-    const analysis = analyzer.getSentiment(filteredContent);
+      // Tokenization
+      const tokenizer = new WordTokenizer();
+      const tokens = tokenizer.tokenize(uniformContent);
 
-    req.body.score = analysis;
-    next();
+      // Remove stop words
+      const filteredContent = sw.removeStopwords(tokens);
+
+      // Comment sentiment
+      const analyzer = new SentimentAnalyzer('English', PorterStemmer, 'afinn');
+      const analysis = analyzer.getSentiment(filteredContent);
+
+      req.body.score = analysis;
+      return next();
+    }
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
